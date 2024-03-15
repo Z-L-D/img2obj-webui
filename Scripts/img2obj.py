@@ -3,7 +3,9 @@ import gradio as gr
 import os
 import pathlib
 
-from rembg.background_processor import check_input_image, preprocess
+from rembg.processor import check_input_image, preprocess
+from triposr.file_io import check_cutout_image, update_model_filenames
+from triposr.processor import generate
 
 from modules import script_callbacks
 from modules.paths import models_path
@@ -12,7 +14,6 @@ from modules.ui_common import ToolButton, refresh_symbol
 from modules.ui_components import ResizeHandleRow
 from modules import shared
 
-from modules_forge.forge_util import numpy_to_pytorch, pytorch_to_numpy
 from ldm_patched.modules.sd import load_checkpoint_guess_config
 from ldm_patched.modules import model_management
 
@@ -57,22 +58,6 @@ def on_ui_tabs():
                                     "Preprocess", 
                                     elem_id="preprocess", 
                                     variant="secondary"
-                                )
-                                submit_preprocess.click(
-                                    fn=check_input_image, inputs=[input_image]
-                                ).success(
-                                    fn=preprocess,
-                                    inputs=[
-                                        input_image, 
-                                        rembg_model_dropdown,
-                                        do_remove_background, 
-                                        foreground_ratio,
-                                        alpha_matting,
-                                        alpha_matting_foreground_threshold,
-                                        alpha_matting_background_threshold,
-                                        alpha_matting_erode_size
-                                    ],
-                                    outputs=[processed_image]
                                 )
 
                                 rembg_model_dropdown = gr.Dropdown(
@@ -363,13 +348,30 @@ def on_ui_tabs():
                             '''
                         )                
 
-            # submit_postprocess.click(
-            #     fn=check_cutout_image, inputs=[processed_image]
-            # ).success(
-            #     fn=generate,
-            #     inputs=[processed_image, resolution2, threshold],
-            #     outputs=[output_model, obj_file_path]
-            # )
+            submit_preprocess.click(
+                fn=check_input_image, inputs=[input_image]
+            ).success(
+                fn=preprocess,
+                inputs=[
+                    input_image, 
+                    rembg_model_dropdown,
+                    do_remove_background, 
+                    foreground_ratio,
+                    alpha_matting,
+                    alpha_matting_foreground_threshold,
+                    alpha_matting_background_threshold,
+                    alpha_matting_erode_size
+                ],
+                outputs=[processed_image]
+            )
+
+            triposr_render.click(
+                fn=check_cutout_image, inputs=[processed_image]
+            ).success(
+                fn=generate,
+                inputs=[processed_image, triposr_resolution, triposr_threshold],
+                outputs=[output_model, obj_file_path]
+            )
             
             # submit.click(
             #     fn=check_input_image, inputs=[input_image]
@@ -388,12 +390,12 @@ def on_ui_tabs():
             #     outputs=[processed_image]
             # ).success(
             #     fn=generate,
-            #     inputs=[processed_image, resolution2, threshold],
+            #     inputs=[processed_image, triposr_resolution, triposr_threshold],
             #     outputs=[output_model, obj_file_path]
             # )
 
     return [(model_block, "img2obj", "img2obj")]
 
 
-# update_model_filenames()
+update_model_filenames()
 script_callbacks.on_ui_tabs(on_ui_tabs)

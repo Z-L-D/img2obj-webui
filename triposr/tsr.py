@@ -13,14 +13,14 @@ from huggingface_hub import hf_hub_download
 from omegaconf import OmegaConf
 from PIL import Image
 
-from .models.isosurface import MarchingCubeHelper
-from .utils import (
+from triposr.models.isosurface import MarchingCubeHelper
+from triposr.utils import (
     BaseModule,
-    ImagePreprocessor,
     find_class,
     get_spherical_cameras,
     scale_tensor,
 )
+from rembg.processor import ImagePreprocessor
 
 
 class TSR(BaseModule):

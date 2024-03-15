@@ -7,14 +7,11 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import imageio
 import numpy as np
 import PIL.Image
-import rembg
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import trimesh
 from omegaconf import DictConfig, OmegaConf
-from PIL import Image
-
 
 def parse_structured(fields: Any, cfg: Optional[Union[dict, DictConfig]] = None) -> Any:
     scfg = OmegaConf.merge(OmegaConf.structured(fields), cfg)
