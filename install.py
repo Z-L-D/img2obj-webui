@@ -19,10 +19,19 @@ except:
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 req_file = os.path.join(BASE_PATH, "requirements.txt")
-models_dir = os.path.join(models_path, "TripoSR")
-model_url = "https://huggingface.co/stabilityai/TripoSR/blob/main/model.ckpt"
-model_name = os.path.basename(model_url)
-model_path = os.path.join(models_dir, model_name)
+
+#TRIPOSR
+triposr_models_dir = os.path.join(models_path, "TripoSR")
+triposr_model_url = "https://huggingface.co/stabilityai/TripoSR/blob/main/model.ckpt"
+triposr_model_name = os.path.basename(triposr_model_url)
+triposr_model_path = os.path.join(triposr_models_dir, triposr_model_name)
+
+#CRM
+crm_models_dir = os.path.join(models_path, "CRM")
+crm_model_url = ""
+crm_model_name = os.path.basename(crm_model_url)
+crm_model_path = os.path.join(crm_models_dir, crm_model_name)
+
 installation_marker = os.path.join(BASE_PATH, ".install_complete")
 
 def pip_install(*args):

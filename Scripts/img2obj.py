@@ -3,9 +3,10 @@ import gradio as gr
 import os
 import pathlib
 
+from rembg.background_processor import check_input_image, preprocess
+
 from modules import script_callbacks
 from modules.paths import models_path
-# from modules.paths import output_path  # Assuming output_path is correctly imported
 from modules.paths_internal import default_output_dir
 from modules.ui_common import ToolButton, refresh_symbol
 from modules.ui_components import ResizeHandleRow
@@ -20,23 +21,33 @@ def on_ui_tabs():
         with gr.Row(variant="panel"):
             with gr.Column():
                 with gr.Row():
-                    with gr.Column():
-                        input_image = gr.Image(
-                            label="Input Image",
-                            image_mode="RGBA",
-                            sources="upload",
-                            type="pil",
-                            elem_id="content_image",
-                        )
+                    with gr.Tabs():
+                        with gr.Tab("Input Image"):
+                            input_image = gr.Image(
+                                image_mode="RGBA",
+                                sources="upload",
+                                type="pil",
+                                elem_id="content_image",
+                                show_label=False,
+                            )
+                    with gr.Tabs():
+                        with gr.Tab("Processed Image"):
+                            processed_image = gr.Image(
+                                image_mode="RGBA",
+                                sources="upload",
+                                type="pil",
+                                elem_id="cutout_image",
+                                show_label=False,
+                            )
+                        with gr.Tab("Processed Mask"):
+                            processed_image = gr.Image(
+                                image_mode="RGBA",
+                                sources="upload",
+                                type="pil",
+                                elem_id="mask_image",
+                                show_label=False,
+                            )
                         
-                    with gr.Column():
-                        processed_image = gr.Image(
-                            label="Processed Image", 
-                            image_mode="RGBA",
-                            sources="upload",
-                            type="pil",
-                            elem_id="cutout_image",
-                        )
                         
                 with gr.Row():
                     with gr.Column():
@@ -47,6 +58,23 @@ def on_ui_tabs():
                                     elem_id="preprocess", 
                                     variant="secondary"
                                 )
+                                submit_preprocess.click(
+                                    fn=check_input_image, inputs=[input_image]
+                                ).success(
+                                    fn=preprocess,
+                                    inputs=[
+                                        input_image, 
+                                        rembg_model_dropdown,
+                                        do_remove_background, 
+                                        foreground_ratio,
+                                        alpha_matting,
+                                        alpha_matting_foreground_threshold,
+                                        alpha_matting_background_threshold,
+                                        alpha_matting_erode_size
+                                    ],
+                                    outputs=[processed_image]
+                                )
+
                                 rembg_model_dropdown = gr.Dropdown(
                                     label="Cutout Model",
                                     # choices=get_rembg_model_choices(),
@@ -174,7 +202,8 @@ def on_ui_tabs():
                         output_model = gr.Model3D(
                             label="Output Model",
                             interactive=False,
-                            elem_id="triposrCanvas"
+                            elem_id="triposrCanvas",
+                            show_label=False,
                         )
 
                     with gr.Tab("PoSR"):
@@ -333,23 +362,6 @@ def on_ui_tabs():
                                 }
                             '''
                         )                
-
-            # submit_preprocess.click(
-            #     fn=check_input_image, inputs=[input_image]
-            # ).success(
-            #     fn=preprocess,
-            #     inputs=[
-            #         input_image, 
-            #         rembg_model_dropdown,
-            #         do_remove_background, 
-            #         foreground_ratio,
-            #         alpha_matting,
-            #         alpha_matting_foreground_threshold,
-            #         alpha_matting_background_threshold,
-            #         alpha_matting_erode_size
-            #     ],
-            #     outputs=[processed_image]
-            # )
 
             # submit_postprocess.click(
             #     fn=check_cutout_image, inputs=[processed_image]
