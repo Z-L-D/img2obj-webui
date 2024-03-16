@@ -1,41 +1,45 @@
+# install.py
 import subprocess
-import os, sys
+import os
+import sys
 from typing import Any
 import pkg_resources
 from tqdm import tqdm
 import urllib.request
 from packaging import version as pv
 
+# Adjust these imports based on your project structure
+from triposr.file_io import download_model_and_config_if_needed, load_model_on_device, models_dir
+
 # Current version of your extension
 current_version = '1.0'
 
+# Assuming models_path is correctly imported or defined
 try:
     from modules.paths_internal import models_path
-except:
+except ImportError:
     try:
         from modules.paths import models_path
-    except:
+    except ImportError:
         models_path = os.path.abspath("models")
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 req_file = os.path.join(BASE_PATH, "requirements.txt")
 
-#TRIPOSR
-triposr_models_dir = os.path.join(models_path, "TripoSR")
-triposr_model_url = "https://huggingface.co/stabilityai/TripoSR/blob/main/model.ckpt"
-triposr_model_name = os.path.basename(triposr_model_url)
-triposr_model_path = os.path.join(triposr_models_dir, triposr_model_name)
+# Define model and config URLs
+triposr_model_url = "https://huggingface.co/stabilityai/TripoSR/resolve/main/model.ckpt"
+triposr_config_url = "https://huggingface.co/stabilityai/TripoSR/resolve/main/config.yaml"
+# Define model and config paths
+triposr_model_path = os.path.join(models_dir, "model.ckpt")
+triposr_config_path = os.path.join(models_dir, "config.yaml")
 
-#CRM
-crm_models_dir = os.path.join(models_path, "CRM")
-crm_model_url = ""
-crm_model_name = os.path.basename(crm_model_url)
-crm_model_path = os.path.join(crm_models_dir, crm_model_name)
+# Device selection logic
+# device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 installation_marker = os.path.join(BASE_PATH, ".install_complete")
 
 def pip_install(*args):
-    subprocess.run([sys.executable, "-m", "pip", "install", *args])
+    subprocess.run([sys.executable, "-m", "pip", "install", *args], check=True)
 
 def is_installed(package: str, version: str | None = None, strict: bool = True):
     try:
@@ -50,49 +54,38 @@ def is_installed(package: str, version: str | None = None, strict: bool = True):
             return False
     except Exception as e:
         print(f"Error: {e}")
-        return False
 
-def download(url, path):
-    request = urllib.request.urlopen(url)
-    total = int(request.headers.get('Content-Length', 0))
-    with tqdm(total=total, desc='Downloading...', unit='B', unit_scale=True, unit_divisor=1024) as progress:
-        urllib.request.urlretrieve(url, path, reporthook=lambda count, block_size, total_size: progress.update(block_size))
-
-# Check if installation needs to be updated
 needs_installation = True
 if os.path.exists(installation_marker):
     with open(installation_marker, 'r') as f:
         installed_version = f.read().strip()
     if installed_version == current_version:
         needs_installation = False
-    else:
-        print(f"Updating TripoSR-webui from version {installed_version} to {current_version}.")
 
 if needs_installation:
-    # Your installation or update logic here
-    # Ensure the directory for models exists
-    if not os.path.exists(models_dir):
-        os.makedirs(models_dir)
+    print("Installation or update needed. Proceeding...")
 
-    # Download the model if it doesn't exist
-    if not os.path.exists(model_path):
-        download(model_url, model_path)
-
+    # Ensure the models directory exists
+    os.makedirs(models_dir, exist_ok=True)
+    
+    # Download the TripoSR model and config files if they don't exist
+    download_model_and_config_if_needed(triposr_model_url, triposr_config_url, triposr_model_path, triposr_config_path)
+    
+    # Load the model to verify it's correctly set up
+    # Note: If the model loading step is not needed during installation, you can remove this
+    # model = load_model_on_device(triposr_config_path, triposr_model_path, device)
+    
+    # Install required packages
     with open(req_file) as file:
         for package in file:
-            package = package.strip()
-            package_version = None
-            strict = True
-            if "==" in package:
-                package_version = package.split('==')[1]
-            elif ">=" in package:
-                package_version = package.split('>=')[1]
-                strict = False
-            if not is_installed(package, package_version, strict):
-                pip_install(package)
+            package_name, _, package_version = package.strip().partition("==")
+            if not is_installed(package_name, package_version, strict=True):
+                pip_install(package.strip())
 
     # After successful installation/update, write the current version to the marker file
     with open(installation_marker, 'w') as f:
         f.write(current_version)
+    
+    print("Installation or update complete.")
 else:
-    print("Launching with TripoSR-webui installed...")
+    print("No installation or update needed. Launching with the current setup...")

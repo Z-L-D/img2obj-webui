@@ -1,7 +1,10 @@
+# file_io.py
 import os
 import pathlib
 import torch
+import urllib.request
 import gradio as gr
+from tqdm import tqdm
 
 from common.common import generate_random_filename
 from triposr.tsr import TSR
@@ -9,17 +12,49 @@ from triposr.tsr import TSR
 from modules.paths import models_path
 from modules.paths_internal import default_output_dir
 from modules import shared
+from omegaconf import OmegaConf
 
-# if torch.cuda.is_available():
-#     device = "cuda:0"
-# else:
-#     device = "cpu"
+# Device determination logic
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+# Directory for the TripoSR models
+models_dir = os.path.join(models_path, "TripoSR")
+
+# Function to download a file with a progress bar
+def download_with_progress(url, output_path):
+    response = urllib.request.urlopen(url)
+    total = int(response.headers.get('content-length', 0))
+    with tqdm(total=total, unit='B', unit_scale=True, desc=f"Downloading {os.path.basename(output_path)}") as bar:
+        with open(output_path, 'wb') as f:
+            while True:
+                data = response.read(8192)
+                if not data:
+                    break
+                f.write(data)
+                bar.update(len(data))
+
+# Function to ensure both model and config files are downloaded
+def download_model_and_config_if_needed(model_url, config_url, model_path, config_path):
+    if not os.path.exists(model_path):
+        download_with_progress(model_url, model_path)
+    if not os.path.exists(config_path):
+        download_with_progress(config_url, config_path)
+
+# Adjusted to load the model based on the downloaded config and model files
+def load_model_on_device(config_path, model_path, device):
+    cfg = OmegaConf.load(config_path)
+    OmegaConf.resolve(cfg)
+    model = TSR(cfg)  # Adjust TSR to your model class
+    ckpt = torch.load(model_path, map_location=device)
+    model.load_state_dict(ckpt["state_dict"])  # Adjust according to your ckpt structure
+    model.to(device)
+    print(f"Model loaded on {device}")
+    return model
 
 triposr_model_filenames = []
-
-def update_model_filenames():
+def update_triposr_model_filenames():
     global triposr_model_filenames
-    model_root = os.path.join(models_path, 'TripoSR')
+    model_root = models_dir
     os.makedirs(model_root, exist_ok=True)
     triposr_model_filenames = [
         pathlib.Path(x).name for x in
@@ -27,15 +62,15 @@ def update_model_filenames():
     ]
     return triposr_model_filenames
 
-# model = TSR.from_pretrained(
-#     "stabilityai/TripoSR",
-#     config_name="config.yaml",
-#     weight_name="model.ckpt",
-# )
-
-# adjust the chunk size to balance between speed and memory usage
-# model.renderer.set_chunk_size(8192)
-# model.to(device)
+def update_model_filenames_debug():
+    global triposr_model_filenames
+    model_root = models_dir
+    os.makedirs(model_root, exist_ok=True)
+    # Directly list files for debugging
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    triposr_model_filenames = [f for f in os.listdir(model_root) if f.endswith(('.pt', '.ckpt', '.safetensors'))]
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    return triposr_model_filenames
 
 def check_cutout_image(processed_image):
     if processed_image is None:
@@ -46,7 +81,7 @@ def write_obj_to_triposr(obj_data, filename=None):
     os.makedirs(triposr_folder, exist_ok=True)  # Ensure the directory exists
 
     if filename is None:
-        filename = generate_random_filename('.obj')  # Implement or use an existing function to generate a unique filename
+        filename = generate_random_filename('.obj')
 
     full_path = os.path.join(triposr_folder, filename)
 

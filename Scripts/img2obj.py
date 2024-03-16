@@ -1,21 +1,12 @@
-import torch
 import gradio as gr
-import os
-import pathlib
 
 from rembg.processor import check_input_image, preprocess
-from triposr.file_io import check_cutout_image, update_model_filenames
+from triposr.file_io import check_cutout_image, update_triposr_model_filenames
 from triposr.processor import generate
 
 from modules import script_callbacks
-from modules.paths import models_path
-from modules.paths_internal import default_output_dir
-from modules.ui_common import ToolButton, refresh_symbol
-from modules.ui_components import ResizeHandleRow
-from modules import shared
 
-from ldm_patched.modules.sd import load_checkpoint_guess_config
-from ldm_patched.modules import model_management
+triposr_models = update_triposr_model_filenames()
 
 def on_ui_tabs():
     with gr.Blocks() as model_block:
@@ -112,8 +103,8 @@ def on_ui_tabs():
                                 )
                                 triposr_filename = gr.Dropdown(
                                     label="TripoSR Checkpoint",
-                                    # choices=triposr_model_filenames,
-                                    # value=triposr_model_filenames[0] if len(triposr_model_filenames) > 0 else None
+                                    choices=triposr_models,
+                                    value=triposr_models[0] if len(triposr_models) > 0 else None
                                 )
                                 triposr_resolution = gr.Slider(
                                     label="Mesh Resolution",
@@ -396,6 +387,4 @@ def on_ui_tabs():
 
     return [(model_block, "img2obj", "img2obj")]
 
-
-update_model_filenames()
 script_callbacks.on_ui_tabs(on_ui_tabs)
