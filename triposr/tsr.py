@@ -47,6 +47,27 @@ class TSR(BaseModule):
     cfg: Config
 
     @classmethod
+    def from_pretrained(
+        cls, pretrained_model_name_or_path: str, config_name: str, weight_name: str
+    ):
+        if os.path.isdir(pretrained_model_name_or_path):
+            config_path = os.path.join(pretrained_model_name_or_path, config_name)
+            weight_path = os.path.join(pretrained_model_name_or_path, weight_name)
+        else:
+            config_path = hf_hub_download(
+                repo_id=pretrained_model_name_or_path, filename=config_name
+            )
+            weight_path = hf_hub_download(
+                repo_id=pretrained_model_name_or_path, filename=weight_name
+            )
+
+        cfg = OmegaConf.load(config_path)
+        OmegaConf.resolve(cfg)
+        model = cls(cfg)
+        ckpt = torch.load(weight_path, map_location="cpu")
+        model.load_state_dict(ckpt)
+        return model
+
     def configure(self):
         self.image_tokenizer = find_class(self.cfg.image_tokenizer_cls)(
             self.cfg.image_tokenizer

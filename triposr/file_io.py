@@ -41,10 +41,10 @@ def download_model_and_config_if_needed(model_url, config_url, model_path, confi
         download_with_progress(config_url, config_path)
 
 # Adjusted to load the model based on the downloaded config and model files
-def load_model_on_device(config_path, model_path, device):
+def load_model_on_device(config_path, model_path):
     cfg = OmegaConf.load(config_path)
     OmegaConf.resolve(cfg)
-    model = TSR(cfg)  # Adjust TSR to your model class
+    model = TSR(cfg.model_config)  # Adjust TSR to your model class
     ckpt = torch.load(model_path, map_location=device)
     model.load_state_dict(ckpt["state_dict"])  # Adjust according to your ckpt structure
     model.to(device)
@@ -60,16 +60,6 @@ def update_triposr_model_filenames():
         pathlib.Path(x).name for x in
         shared.walk_files(model_root, allowed_extensions=[".pt", ".ckpt", ".safetensors"])
     ]
-    return triposr_model_filenames
-
-def update_model_filenames_debug():
-    global triposr_model_filenames
-    model_root = models_dir
-    os.makedirs(model_root, exist_ok=True)
-    # Directly list files for debugging
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    triposr_model_filenames = [f for f in os.listdir(model_root) if f.endswith(('.pt', '.ckpt', '.safetensors'))]
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     return triposr_model_filenames
 
 def check_cutout_image(processed_image):

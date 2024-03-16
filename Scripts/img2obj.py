@@ -4,7 +4,7 @@ from rembg.file_io import update_rembg_model_filenames, check_input_image
 from rembg.processor import preprocess
 
 from triposr.file_io import check_cutout_image, update_triposr_model_filenames
-from triposr.processor import generate
+from triposr.processor import generate, generate_pipeline
 
 from modules import script_callbacks
 
@@ -54,7 +54,7 @@ def on_ui_tabs():
                                     variant="secondary"
                                 )
 
-                                rembg_model_dropdown = gr.Dropdown(
+                                preprocess_filename = gr.Dropdown(
                                     label="Cutout Model",
                                     choices=rembg_models,
                                     value="dis_general_use",  # Default value
@@ -348,7 +348,7 @@ def on_ui_tabs():
                 fn=preprocess,
                 inputs=[
                     input_image, 
-                    rembg_model_dropdown,
+                    preprocess_filename,
                     do_remove_background, 
                     foreground_ratio,
                     alpha_matting,
@@ -362,9 +362,17 @@ def on_ui_tabs():
             triposr_render.click(
                 fn=check_cutout_image, inputs=[processed_image]
             ).success(
-                fn=generate,
-                inputs=[processed_image, triposr_resolution, triposr_threshold],
-                outputs=[output_model, obj_file_path]
+                fn=generate_pipeline,
+                inputs=[
+                    triposr_filename,
+                    processed_image, 
+                    triposr_resolution, 
+                    triposr_threshold
+                ],
+                outputs=[
+                    output_model, 
+                    obj_file_path
+                ]
             )
             
             # submit.click(
