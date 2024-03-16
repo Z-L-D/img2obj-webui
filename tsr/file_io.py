@@ -5,6 +5,7 @@ import torch
 import urllib.request
 import gradio as gr
 from tqdm import tqdm
+import gc
 
 from common.common import generate_random_filename
 from tsr.system import TSR
@@ -41,16 +42,19 @@ def download_model_and_config_if_needed(model_url, config_url, model_path, confi
         download_with_progress(config_url, config_path)
 
 # Adjusted to load the model based on the downloaded config and model files
-def load_model_on_device(config_path, model_path):
-    # cfg = OmegaConf.load(config_path)
-    # OmegaConf.resolve(cfg)
-    # model = TSR(cfg.model_config)  # Adjust TSR to your model class
-    # ckpt = torch.load(model_path, map_location=device)
-    # model.load_state_dict(ckpt["state_dict"])  # Adjust according to your ckpt structure
-    # model.to(device)
-    print(f"Model loaded on {device}")
-    # return model
-    return device
+# def load_model_on_device(config_path, model_path):
+    
+#     return device
+
+
+def unload_model(model):
+    # Delete the model
+    del model
+    # Clear the CUDA cache (if using GPU)
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    # Manually trigger garbage collection
+    gc.collect()
 
 triposr_model_filenames = []
 def update_triposr_model_filenames():

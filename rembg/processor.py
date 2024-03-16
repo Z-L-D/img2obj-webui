@@ -137,6 +137,18 @@ def preprocess(
     alpha_matting_background_threshold=10,
     alpha_matting_erode_size=0
 ):
+    print("\n")
+    print("=====================================================")
+    print("REMBG Preprocess started.")
+    print("- - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    print("model_name: " + rembg_model)
+    print("remove background: " + str(do_remove_background))
+    print("foreground_ratio: " + str(foreground_ratio))
+    print("alpha_matting: " + str(alpha_matting))
+    print("alpha_matting_foreground_threshold: " + str(alpha_matting_foreground_threshold))
+    print("alpha_matting_background_threshold: " + str(alpha_matting_background_threshold))
+    print("alpha_matting_erode_size: " + str(alpha_matting_erode_size))
+
     def fill_background(image):
         image = np.array(image).astype(np.float32) / 255.0
         image = image[:, :, :3] * image[:, :, 3:4] + (1 - image[:, :, 3:4]) * 0.5
@@ -159,4 +171,9 @@ def preprocess(
         image = input_image
         if image.mode == "RGBA":
             image = fill_background(image)
+
+    print("- - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    print("=====================================================")
+    print("\n")
+    
     return image

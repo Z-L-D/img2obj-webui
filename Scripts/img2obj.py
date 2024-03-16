@@ -4,7 +4,7 @@ from rembg.file_io import update_rembg_model_filenames, check_input_image
 from rembg.processor import preprocess
 
 from tsr.file_io import check_cutout_image, update_triposr_model_filenames
-from tsr.processor import generate, generate_pipeline
+from tsr.processor import generate
 
 from modules import script_callbacks
 
@@ -130,15 +130,7 @@ def on_ui_tabs():
                                     value=8192,
                                     step=128,
                                 )
-                                triposr_auto_unload = gr.Checkbox(
-                                    label="Automatically unload model after generation", 
-                                    value=True
-                                )
-                                triposr_unload = gr.Button(
-                                    "Unload TripoSR Model", 
-                                    elem_id="triposr_unload", 
-                                    variant="secondary"
-                                )
+                                
                             with gr.Tab("CRM"):
                                 crm_render = gr.Button(
                                     "Render", 
@@ -164,15 +156,10 @@ def on_ui_tabs():
                                     value=25,
                                     step=0.1,
                                 )
-                                crm_seed = gr.Number(value=1234, label="Seed", precision=0)
-                                crm_auto_unload = gr.Checkbox(
-                                    label="Automatically unload model after generation", 
-                                    value=True
-                                )
-                                crm_unload = gr.Button(
-                                    "Unload CRM Model", 
-                                    elem_id="crm_unload", 
-                                    variant="secondary"
+                                crm_seed = gr.Number(
+                                    value=1234, 
+                                    label="Seed", 
+                                    precision=0
                                 )
                         
             with gr.Column():
