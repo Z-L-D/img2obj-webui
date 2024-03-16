@@ -1,11 +1,14 @@
 import gradio as gr
 
-from rembg.processor import check_input_image, preprocess
+from rembg.file_io import update_rembg_model_filenames, check_input_image
+from rembg.processor import preprocess
+
 from triposr.file_io import check_cutout_image, update_triposr_model_filenames
 from triposr.processor import generate
 
 from modules import script_callbacks
 
+rembg_models = update_rembg_model_filenames()
 triposr_models = update_triposr_model_filenames()
 
 def on_ui_tabs():
@@ -32,7 +35,7 @@ def on_ui_tabs():
                                 show_label=False,
                             )
                         with gr.Tab("Processed Mask"):
-                            processed_image = gr.Image(
+                            processed_mask = gr.Image(
                                 image_mode="RGBA",
                                 sources="upload",
                                 type="pil",
@@ -53,7 +56,7 @@ def on_ui_tabs():
 
                                 rembg_model_dropdown = gr.Dropdown(
                                     label="Cutout Model",
-                                    # choices=get_rembg_model_choices(),
+                                    choices=rembg_models,
                                     value="dis_general_use",  # Default value
                                 )
                                 do_remove_background = gr.Checkbox(

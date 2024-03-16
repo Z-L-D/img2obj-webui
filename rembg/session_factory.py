@@ -16,7 +16,7 @@ from .sessions.u2netp import U2netpSession
 
 
 def new_session(
-    model_name: str = "u2net", providers=None, *args, **kwargs
+    model_name: str, providers=None, *args, **kwargs
 ) -> BaseSession:
     """
     Create a new session object based on the specified model name.
@@ -51,8 +51,6 @@ def new_session(
         session_class: Type[BaseSession] = U2netSession
     if model_name == "u2netp":
         session_class: Type[BaseSession] = U2netpSession
-
-    # session_class: Type[BaseSession] = U2netSession
 
     for sc in sessions_class:
         if sc.name() == model_name:

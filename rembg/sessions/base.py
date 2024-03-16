@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Type
 
 import numpy as np
 import onnxruntime as ort
@@ -7,7 +7,6 @@ from PIL import Image
 from PIL.Image import Image as PILImage
 
 from modules.paths import models_path
-
 
 class BaseSession:
     """This is a base class for managing a session with a machine learning model."""
@@ -38,6 +37,15 @@ class BaseSession:
             providers=self.providers,
             sess_options=sess_opts,
         )
+
+    def __enter__(self):
+        """Enter the runtime context related to this object."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit the runtime context related to this object."""
+        # Clean up resources here if necessary (e.g., close the session)
+        del self.inner_session
 
     def normalize(
         self,
@@ -75,11 +83,6 @@ class BaseSession:
 
     @classmethod
     def u2net_home(cls, *args, **kwargs):
-        # return os.path.expanduser(
-        #     os.getenv(
-        #         "U2NET_HOME", os.path.join(os.getenv("XDG_DATA_HOME", "~"), ".u2net")
-        #     )
-        # )
         model_root = os.path.join(models_path, 'U2NET')
         os.makedirs(model_root, exist_ok=True)
         return model_root
@@ -91,3 +94,4 @@ class BaseSession:
     @classmethod
     def name(cls, *args, **kwargs):
         raise NotImplementedError
+

@@ -3,21 +3,9 @@ import rembg
 import PIL
 import torch
 import torch.nn.functional as F
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-# from PIL import Image
+from typing import Any, List, Union
 
-def get_rembg_model_choices():
-    # List of available models. 
-    return [
-        "dis_anime",
-        "dis_general_use",
-        "silueta",
-        "u2net_cloth_seg", 
-        "u2net_human_seg", 
-        "u2net", 
-        "u2netp", 
-    ]
-        # "sam", #- FIXME - not currently working
+
 
 class ImagePreprocessor:
     def convert_and_resize(
@@ -138,10 +126,6 @@ def resize_foreground(
     )
     new_image = PIL.Image.fromarray(new_image)
     return new_image
-
-def check_input_image(input_image):
-    if input_image is None:
-        raise gr.Error("No image uploaded!")
     
 def preprocess(
     input_image, 
