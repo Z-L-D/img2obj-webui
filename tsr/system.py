@@ -9,16 +9,18 @@ import torch
 import torch.nn.functional as F
 import trimesh
 from einops import rearrange
+from huggingface_hub import hf_hub_download
+from omegaconf import OmegaConf
 from PIL import Image
 
-from triposr.models.isosurface import MarchingCubeHelper
-from triposr.utils import (
+from .models.isosurface import MarchingCubeHelper
+from .utils import (
     BaseModule,
+    ImagePreprocessor,
     find_class,
     get_spherical_cameras,
     scale_tensor,
 )
-from rembg.processor import ImagePreprocessor
 
 
 class TSR(BaseModule):
@@ -137,10 +139,10 @@ class TSR(BaseModule):
             if return_type == "pt":
                 return image
             elif return_type == "np":
-                return image.detach().cpu().numpy()
+                return image.detach().cuda().numpy()
             elif return_type == "pil":
                 return Image.fromarray(
-                    (image.detach().cpu().numpy() * 255.0).astype(np.uint8)
+                    (image.detach().cuda().numpy() * 255.0).astype(np.uint8)
                 )
             else:
                 raise NotImplementedError

@@ -9,7 +9,7 @@ import urllib.request
 from packaging import version as pv
 
 # Adjust these imports based on your project structure
-from triposr.file_io import download_model_and_config_if_needed, load_model_on_device, models_dir
+from tsr.file_io import download_model_and_config_if_needed, load_model_on_device, models_dir
 
 # Current version of your extension
 current_version = '1.0'

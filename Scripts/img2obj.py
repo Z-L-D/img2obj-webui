@@ -3,8 +3,8 @@ import gradio as gr
 from rembg.file_io import update_rembg_model_filenames, check_input_image
 from rembg.processor import preprocess
 
-from triposr.file_io import check_cutout_image, update_triposr_model_filenames
-from triposr.processor import generate, generate_pipeline
+from tsr.file_io import check_cutout_image, update_triposr_model_filenames
+from tsr.processor import generate, generate_pipeline
 
 from modules import script_callbacks
 
@@ -284,11 +284,12 @@ def on_ui_tabs():
                             file_types=['.obj'],
                         )                            
 
-                        obj_file_path = gr.Textbox(
-                            visible=False,
-                            label="OBJ File Path",
-                            elem_id="obj_file_path"
-                        )  # Hidden textbox to pass the OBJ file path
+                        # obj_file_path = gr.Textbox(
+                        #     visible=False,
+                        #     label="OBJ File Path",
+                        #     elem_id="obj_file_path"
+                        # )  # Hidden textbox to pass the OBJ file path
+                        obj_file_path = gr.Textbox(visible=True, elem_id="obj_file_path")  # Hidden textbox to pass the OBJ file path
 
                         scene_background_image = gr.Image(
                             label="Scene Background",
@@ -362,7 +363,7 @@ def on_ui_tabs():
             triposr_render.click(
                 fn=check_cutout_image, inputs=[processed_image]
             ).success(
-                fn=generate_pipeline,
+                fn=generate,
                 inputs=[
                     triposr_filename,
                     processed_image, 

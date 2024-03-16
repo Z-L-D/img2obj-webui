@@ -7,7 +7,7 @@ import gradio as gr
 from tqdm import tqdm
 
 from common.common import generate_random_filename
-from triposr.tsr import TSR
+from tsr.system import TSR
 
 from modules.paths import models_path
 from modules.paths_internal import default_output_dir
@@ -42,14 +42,15 @@ def download_model_and_config_if_needed(model_url, config_url, model_path, confi
 
 # Adjusted to load the model based on the downloaded config and model files
 def load_model_on_device(config_path, model_path):
-    cfg = OmegaConf.load(config_path)
-    OmegaConf.resolve(cfg)
-    model = TSR(cfg.model_config)  # Adjust TSR to your model class
-    ckpt = torch.load(model_path, map_location=device)
-    model.load_state_dict(ckpt["state_dict"])  # Adjust according to your ckpt structure
-    model.to(device)
+    # cfg = OmegaConf.load(config_path)
+    # OmegaConf.resolve(cfg)
+    # model = TSR(cfg.model_config)  # Adjust TSR to your model class
+    # ckpt = torch.load(model_path, map_location=device)
+    # model.load_state_dict(ckpt["state_dict"])  # Adjust according to your ckpt structure
+    # model.to(device)
     print(f"Model loaded on {device}")
-    return model
+    # return model
+    return device
 
 triposr_model_filenames = []
 def update_triposr_model_filenames():
