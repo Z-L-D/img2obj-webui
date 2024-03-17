@@ -1,0 +1,21 @@
+open-clip-torch==2.7.0
+opencv-contrib-python-headless==4.9.0.80
+opencv-python-headless==4.9.0.80
+git+https://github.com/NVlabs/nvdiffrast
+pygltflib
+kiui
+xatlas
+ninja
+pymeshlab
+
+trimesh==4.0.5
+imageio[ffmpeg]
+rembg
+git+https://github.com/tatsy/torchmcubes.git
+
+git+https://github.com/NVlabs/nvdiffrast
+# pygltflib
+kiui
+xatlas
+# ninja
+# pymeshlab

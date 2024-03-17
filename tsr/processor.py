@@ -12,7 +12,7 @@ from modules.paths_internal import default_output_dir
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"    
 
-def generate(model_name, image, resolution, threshold):
+def triposr_generate(model_name, image, resolution, threshold):
     # Determine model and config paths based on model_name
     model_path = os.path.join(models_dir, f"{model_name}")  # Example path, adjust as needed
     config_path = os.path.join(models_dir, f"config.yaml")  # Example path, adjust as needed

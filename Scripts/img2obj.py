@@ -4,7 +4,9 @@ from rembg.file_io import update_rembg_model_filenames, check_input_image
 from rembg.processor import preprocess
 
 from tsr.file_io import check_cutout_image, update_triposr_model_filenames
-from tsr.processor import generate
+from tsr.processor import triposr_generate
+
+from crm.processor import crm_generate
 
 from modules import script_callbacks
 
@@ -123,14 +125,14 @@ def on_ui_tabs():
                                     value=25,
                                     step=0.1,
                                 )
-                                triposr_chunking = gr.Slider( #- FIXME - Currently does nothing. Does it actually do anything at all? I don't know. It doesn't appear to affect much in tests.
+                                triposr_chunking = gr.Slider( #- FIXME - Currently not attached.
                                     label="Chunking",
                                     minimum=128,
                                     maximum=16384,
                                     value=8192,
                                     step=128,
                                 )
-                                
+
                             with gr.Tab("CRM"):
                                 crm_render = gr.Button(
                                     "Render", 
@@ -350,7 +352,7 @@ def on_ui_tabs():
             triposr_render.click(
                 fn=check_cutout_image, inputs=[processed_image]
             ).success(
-                fn=generate,
+                fn=triposr_generate,
                 inputs=[
                     triposr_filename,
                     processed_image, 
@@ -361,6 +363,23 @@ def on_ui_tabs():
                     output_model, 
                     obj_file_path
                 ]
+            )
+
+            crm_render.click(
+                fn=check_cutout_image, inputs=[processed_image]
+            ).success(
+                fn=crm_generate,
+                inputs=[
+                    crm_filename,
+                    processed_image, 
+                    crm_steps, 
+                    crm_cfg,
+                    crm_seed
+                ],
+                # outputs=[
+                #     output_model, 
+                #     obj_file_path
+                # ]
             )
             
             # submit.click(

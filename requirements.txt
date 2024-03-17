@@ -2,3 +2,6 @@ trimesh==4.0.5
 imageio[ffmpeg]
 rembg
 git+https://github.com/tatsy/torchmcubes.git
+git+https://github.com/NVlabs/nvdiffrast
+kiui
+xatlas

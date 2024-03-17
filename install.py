@@ -9,7 +9,9 @@ import urllib.request
 from packaging import version as pv
 
 # Adjust these imports based on your project structure
-from tsr.file_io import download_model_and_config_if_needed, load_model_on_device, models_dir
+from tsr.file_io import download_model_and_config_if_needed, models_dir
+
+print("== Extension: img2obj installation check... ==")
 
 # Current version of your extension
 current_version = '1.0'
@@ -63,7 +65,7 @@ if os.path.exists(installation_marker):
         needs_installation = False
 
 if needs_installation:
-    print("Installation or update needed. Proceeding...")
+    print("== Extension: img2obj requires installation or update. Proceeding... ==")
 
     # Ensure the models directory exists
     os.makedirs(models_dir, exist_ok=True)
@@ -86,6 +88,6 @@ if needs_installation:
     with open(installation_marker, 'w') as f:
         f.write(current_version)
     
-    print("Installation or update complete.")
+    print("== Extension: img2obj installation or update complete. ==")
 else:
-    print("No installation or update needed. Launching with the current setup...")
+    print("== Extension: Launching with img2obj installed ==")
