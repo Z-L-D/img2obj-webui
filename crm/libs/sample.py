@@ -1,9 +1,9 @@
 import numpy as np
 import torch
-from imagedream.camera_utils import get_camera_for_index
-from imagedream.ldm.util import set_seed, add_random_background
-from libs.base_utils import do_resize_content
-from imagedream.ldm.models.diffusion.ddim import DDIMSampler
+from crm.imagedream.camera_utils import get_camera_for_index
+from crm.imagedream.ldm.util import set_seed, add_random_background
+from crm.libs.base_utils import do_resize_content
+from crm.imagedream.ldm.models.diffusion.ddim import DDIMSampler
 from torchvision import transforms as T
 
 
@@ -41,7 +41,7 @@ class ImageDreamDiffusion:
         self.image_transform = T.Compose(
             [
                 T.Resize((size, size)),
-                T.ToTensor(),
+                T.ToTensor(), # scale image pixels from [0,255] to [0,1] values
                 T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             ]
         )
@@ -162,9 +162,9 @@ class ImageDreamDiffusion:
 
             x_sample = model.decode_first_stage(samples_ddim)
             x_sample = torch.clamp((x_sample + 1.0) / 2.0, min=0.0, max=1.0)
-            x_sample = 255.0 * x_sample.permute(0, 2, 3, 1).cpu().numpy()
+            x_sample = x_sample.permute(0, 2, 3, 1) # (N, H, W, 3) in [0, 1]
 
-        return list(x_sample.astype(np.uint8))
+        return x_sample
 
     def diffuse(self, t, ip, n_test=2):
         set_seed(self.seed)
@@ -333,9 +333,9 @@ class ImageDreamDiffusionStage2:
             )
             x_sample = model.decode_first_stage(samples_ddim)
             x_sample = torch.clamp((x_sample + 1.0) / 2.0, min=0.0, max=1.0)
-            x_sample = 255.0 * x_sample.permute(0, 2, 3, 1).cpu().numpy()
+            x_sample = x_sample.permute(0, 2, 3, 1)  # (N, H, W, 3) in [0, 1]
 
-        return list(x_sample.astype(np.uint8))
+        return x_sample
 
     @torch.no_grad()
     def diffuse(self, t, ip, pixel_images, n_test=2):

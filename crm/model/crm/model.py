@@ -4,17 +4,17 @@ import torch.nn.functional as F
 
 import numpy as np
 
-
-from pathlib import Path
 import cv2
 import trimesh
 import nvdiffrast.torch as dr
 
-from model.archs.decoders.shape_texture_net import TetTexNet
-from model.archs.unet import UNetPP
-from util.renderer import Renderer
-from model.archs.mlp_head import SdfMlp, RgbMlp
+from crm.model.archs.decoders.shape_texture_net import TetTexNet
+from crm.model.archs.unet import UNetPP
+from crm.util.renderer import Renderer
+from crm.model.archs.mlp_head import SdfMlp, RgbMlp
 import xatlas
+
+# from mesh_processer.mesh import Mesh
 
 
 class Dummy:

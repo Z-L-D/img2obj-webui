@@ -17,8 +17,6 @@ try:
 except:
     XFORMERS_IS_AVAILBLE = False
 
-XFORMERS_IS_AVAILBLE = False
-
 # CrossAttn precision handling
 import os
 
