@@ -5,4 +5,8 @@ git+https://github.com/tatsy/torchmcubes.git
 git+https://github.com/NVlabs/nvdiffrast
 kiui
 xatlas
+pygltflib
+pymeshlab
+opencv-contrib-python-headless==4.9.0.80
+opencv-python-headless==4.9.0.80
 ninja

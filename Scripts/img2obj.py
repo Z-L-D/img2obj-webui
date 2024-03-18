@@ -6,7 +6,7 @@ from rembg.processor import preprocess
 from tsr.file_io import check_cutout_image, update_triposr_model_filenames
 from tsr.processor import triposr_generate
 
-from crm.processor import crm_generate
+from crm.app import crm_generate
 
 from modules import script_callbacks
 

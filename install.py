@@ -26,7 +26,10 @@ except ImportError:
         models_path = os.path.abspath("models")
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
-req_file = os.path.join(BASE_PATH, "requirements.txt")
+if torch.cuda.is_available():
+    req_file = os.path.join(BASE_PATH, "requirements_cuda.txt")
+else:
+    req_file = os.path.join(BASE_PATH, "requirements.txt")
 
 # Define model and config URLs
 triposr_model_url = "https://huggingface.co/stabilityai/TripoSR/resolve/main/model.ckpt"
