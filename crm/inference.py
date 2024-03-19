@@ -2,10 +2,12 @@ import numpy as np
 import torch
 import time
 import nvdiffrast.torch as dr
-from util.utils import get_tri
 import tempfile
-from mesh import Mesh
 import zipfile
+
+from crm.util.utils import get_tri
+from crm.mesh import Mesh
+
 def generate3d(model, rgb, ccm, device):
 
     color_tri = torch.from_numpy(rgb)/255

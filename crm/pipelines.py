@@ -1,6 +1,6 @@
 import torch
-from libs.base_utils import do_resize_content
-from imagedream.ldm.util import (
+from crm.libs.base_utils import do_resize_content
+from crm.imagedream.ldm.util import (
     instantiate_from_config,
     get_obj_from_str,
 )

@@ -6,7 +6,6 @@ from omegaconf import OmegaConf
 import torch
 from PIL import Image
 import PIL
-from pipelines import TwoStagePipeline
 from huggingface_hub import hf_hub_download
 import os
 import rembg
@@ -16,8 +15,9 @@ import os
 import json
 import argparse
 
-from model import CRM
-from inference import generate3d
+from crm.model import CRM
+from crm.inference import generate3d
+from crm.pipelines import TwoStagePipeline
 
 pipeline = None
 rembg_session = rembg.new_session()
