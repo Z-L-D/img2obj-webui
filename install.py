@@ -31,12 +31,21 @@ if torch.cuda.is_available():
 else:
     req_file = os.path.join(BASE_PATH, "requirements.txt")
 
+#== TRIPOSR
 # Define model and config URLs
 triposr_model_url = "https://huggingface.co/stabilityai/TripoSR/resolve/main/model.ckpt"
 triposr_config_url = "https://huggingface.co/stabilityai/TripoSR/resolve/main/config.yaml"
 # Define model and config paths
 triposr_model_path = os.path.join(models_dir, "model.ckpt")
 triposr_config_path = os.path.join(models_dir, "config.yaml")
+
+#== CRM
+# Define model and config URLs
+crm_model_url = ""
+crm_config_url = ""
+# Define model and config paths
+crm_model_path = os.path.join(models_dir, "")
+crm_config_path = os.path.join(models_dir, "")
 
 # Device selection logic
 # device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -75,10 +84,7 @@ if needs_installation:
     
     # Download the TripoSR model and config files if they don't exist
     download_model_and_config_if_needed(triposr_model_url, triposr_config_url, triposr_model_path, triposr_config_path)
-    
-    # Load the model to verify it's correctly set up
-    # Note: If the model loading step is not needed during installation, you can remove this
-    # model = load_model_on_device(triposr_config_path, triposr_model_path, device)
+    # download_model_and_config_if_needed(crm_model_url, crm_config_url, crm_model_path, crm_config_path)
     
     # Install required packages
     with open(req_file) as file:
