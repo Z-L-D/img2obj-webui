@@ -9,7 +9,8 @@ import urllib.request
 from packaging import version as pv
 
 # Adjust these imports based on your project structure
-from tsr.file_io import download_model_and_config_if_needed, models_dir
+from tsr.file_io import models_dir
+from common.file_io import download_model_and_config_if_needed
 
 print("== Extension: img2obj installation check... ==")
 

@@ -4,8 +4,9 @@ import os
 import pathlib
 
 from .utils import to_gradio_3d_orientation
-from .file_io import write_obj_to_triposr, unload_model, models_dir
+from .file_io import write_obj_to_triposr, models_dir
 from .system import TSR
+from common.file_io import unload_model
 
 from modules.paths import models_path
 from modules.paths_internal import default_output_dir
