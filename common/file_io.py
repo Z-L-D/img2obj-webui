@@ -2,6 +2,21 @@ import time
 import random
 import string
 
+import os
+import pathlib
+import torch
+import urllib.request
+import gradio as gr
+from tqdm import tqdm
+import gc
+
+from tsr.system import TSR
+
+from modules.paths import models_path
+from modules.paths_internal import default_output_dir
+from modules import shared
+from omegaconf import OmegaConf
+
 
 # Device determination logic
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
